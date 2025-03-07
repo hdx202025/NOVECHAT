@@ -8,6 +8,7 @@ import MessageActions from '@/components/features/MessageActions'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useMessages } from '@/hooks/useMessages'
+import { useTypingStatus } from '@/hooks/useTypingStatus'
 import { formatDistanceToNow } from 'date-fns'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
@@ -22,8 +23,10 @@ export default function ChatPage({ params }: Props) {
   const [showSearch, setShowSearch] = useState(false)
   const [userId, setUserId] = useState<string | null>(null)
   const { messages, loading, error, sendMessage } = useMessages(chatId)
+  const { typingUsers, setTypingStatus } = useTypingStatus(chatId)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
+  const typingTimeoutRef = useRef<NodeJS.Timeout>()
 
   // Check authentication
   useEffect(() => {
@@ -43,11 +46,33 @@ export default function ChatPage({ params }: Props) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setNewMessage(value)
+
+    // Clear existing timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current)
+    }
+
+    // Set typing status to true
+    setTypingStatus(true)
+
+    // Set typing status to false after 2 seconds of no input
+    typingTimeoutRef.current = setTimeout(() => {
+      setTypingStatus(false)
+    }, 2000)
+  }
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
     if (newMessage.trim()) {
       await sendMessage(newMessage)
       setNewMessage('')
+      setTypingStatus(false)
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current)
+      }
     }
   }
 
@@ -96,6 +121,9 @@ export default function ChatPage({ params }: Props) {
             isOwn={message.sender_id === userId}
           />
         ))}
+        {typingUsers.length > 0 && (
+          <TypingIndicator usersTyping={typingUsers.length} />
+        )}
         <div ref={messagesEndRef} />
       </div>
 
@@ -108,7 +136,7 @@ export default function ChatPage({ params }: Props) {
           <input
             type="text"
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={handleInputChange}
             placeholder="Type a message..."
             className="flex-1 rounded-full border border-gray-300 px-4 py-2 focus:outline-none focus:border-blue-500"
           />
