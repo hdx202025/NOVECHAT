@@ -7,8 +7,8 @@ import { RealtimeProvider } from '@/contexts/RealtimeContext'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Nova Chat - Secure Messaging App',
-  description: 'A secure, encrypted messaging app built with Next.js and Tailwind CSS',
+  title: 'Nova Chat',
+  description: 'Secure encrypted messaging app',
   manifest: '/manifest.json',
   themeColor: '#0088CC',
   appleWebApp: {
