@@ -1,0 +1,11 @@
+{
+  "name": "Nova Chat",
+  "short_name": "NovaChat",
+  "description": "Secure encrypted messaging app",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#0088CC",
+  "orientation": "portrait",
+  "icons": []
+} 
