@@ -20,12 +20,17 @@ export async function middleware(req: NextRequest) {
   return res
 }
 
+// Update matcher configuration to be more specific
 export const config = {
   matcher: [
-    '/chat/:path*',
-    '/profile/:path*',
-    '/settings/:path*',
-    '/calls/:path*',
-    '/((?!auth|_next/static|_next/image|favicon.ico).*)',
+    /*
+     * Match all request paths except for the ones starting with:
+     * - auth (auth routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     */
+    '/((?!auth|_next/static|_next/image|favicon.ico|public).*)',
   ],
 } 
