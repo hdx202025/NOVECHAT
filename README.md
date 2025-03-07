@@ -380,4 +380,5 @@ This will generate a static export in the `out` directory that can be deployed t
 
 ## License
 
-MIT 
+MIT #   N O V E C H A T  
+ 
